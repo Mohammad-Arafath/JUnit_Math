@@ -28,7 +28,7 @@ pipeline {
                 script {
                     bat '''
                     cd JUnit_Java
-                    java -jar lib\\junit-platform-console-standalone-1.11.4.jar --class-path bin --scan-class-path
+                    java -jar lib\\junit-platform-console-standalone-1.11.4.jar --class-path bin --scan-class-path --reports-dir bin\\test-logs
                     '''
                 }
             }
@@ -36,7 +36,7 @@ pipeline {
     }
     post {
         always {
-            junit '**/JUnit_Java/bin/*.xml'
+            junit '**/JUnit_Java/bin/test-logs/*.xml'
         }
     }
 }
