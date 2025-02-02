@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'master', url: 'https://github.com/Mohammad-Arafath/JUnit_Math.git'
+                git branch: 'main', url: 'https://github.com/Mohammad-Arafath/JUnit_Math.git'
             }
         }
 
