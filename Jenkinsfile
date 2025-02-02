@@ -17,7 +17,7 @@ pipeline {
                     bat '''
                     cd JUnit_Java
                     if not exist bin mkdir bin
-                    javac -cp ".;lib\\junit-jupiter-api-5.11.0.jar;lib\\junit-jupiter-engine-5.11.0.jar;lib\\junit-platform-console-standalone-1.11.0.jar" -d bin JUinit_Test\\MathUtils.java JUinit_Test\\MathUtilsTest.java
+                    javac -cp ".;lib\\junit-jupiter-api-5.11.4.jar;lib\\junit-jupiter-engine-5.11.4.jar;lib\\junit-platform-console-standalone-1.11.0.jar" -d bin JUinit_Test\\MathUtils.java JUinit_Test\\MathUtilsTest.java
                     '''
                 }
             }
@@ -28,7 +28,7 @@ pipeline {
                 script {
                     bat '''
                     cd JUnit_Java
-                    java -jar lib\\junit-platform-console-standalone-1.11.0.jar --class-path bin --scan-class-path
+                    java -jar lib\\junit-platform-console-standalone-1.11.4.jar --class-path bin --scan-class-path
                     '''
                 }
             }
