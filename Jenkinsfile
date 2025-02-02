@@ -28,7 +28,7 @@ pipeline {
                 script {
                     bat '''
                     cd JUnit_Java
-                    java -jar lib\\junit-platform-console-standalone-1.11.4.jar --class-path bin --scan-class-path
+                    java -jar lib\\junit-platform-console-standalone-1.11.0.jar --class-path bin --scan-class-path
                     '''
                 }
             }
