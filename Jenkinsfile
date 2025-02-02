@@ -11,17 +11,6 @@ pipeline {
             }
         }
 
-        stage('Verify Files') {
-            steps {
-                script {
-                    bat '''
-                    echo Checking directory structure...
-                    dir /s /b
-                    '''
-                }
-            }
-        }
-
         stage('Compile') {
             steps {
                 script {
