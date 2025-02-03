@@ -1,11 +1,9 @@
 pipeline {
     agent any
-
     environment {
-        JAVA_HOME = 'C:\\Program Files\\Java\\jdk-17' // Update with your Java path
+        JAVA_HOME = 'C:\\Program Files\\Java\\jdk-17'
         PATH = "${JAVA_HOME}\\bin;${env.PATH}"
     }
-
     stages {
         stage('Checkout Code') {
             steps {
@@ -31,6 +29,7 @@ pipeline {
                     bat '''
                     cd JUnit_Java
                     java -javaagent:lib\\jacocoagent.jar=destfile=bin\\jacoco.exec -jar lib\\junit-platform-console-standalone-1.11.4.jar --class-path bin --scan-class-path --reports-dir bin\\test-logs
+                    java -jar lib\\jacococli.jar report bin\\jacoco.exec --classfiles bin --sourcefiles src --xml bin\\jacoco.xml
                     '''
                 }
             }
@@ -42,12 +41,12 @@ pipeline {
                     bat '''
                     cd JUnit_Java
                     C:\\sonar-scanner\\bin\\sonar-scanner ^
-                    -Dsonar.projectKey=JUnit_Math ^
-                    -Dsonar.sources=. ^
-                    -Dsonar.java.binaries=bin ^
-                    -Dsonar.host.url=http://localhost:9000 ^
-                    -Dsonar.coverage.jacoco.xmlReportPaths=bin\\jacoco.exec ^
-                    -Dsonar.login=%SONAR_TOKEN%
+                        -Dsonar.projectKey=JUnit_Math ^
+                        -Dsonar.sources=. ^
+                        -Dsonar.java.binaries=bin ^
+                        -Dsonar.host.url=http://localhost:9000 ^
+                        -Dsonar.coverage.jacoco.xmlReportPaths=bin\\jacoco.xml ^
+                        -Dsonar.login=%SONAR_TOKEN%
                     '''
                 }
             }
@@ -57,37 +56,17 @@ pipeline {
     post {
         success {
             script {
-                def emailRecipients = 'shaon@opennets.net' // Update as needed
-                def subject = "SUCCESS: Jenkins Build ${env.JOB_NAME} #${env.BUILD_NUMBER}"
-                def body = """
-                    <p>Build Result: <b>SUCCESS</b></p>
-                    <p>Job Name: ${env.JOB_NAME}</p>
-                    <p>Build Number: ${env.BUILD_NUMBER}</p>
-                    <p><a href="${env.BUILD_URL}">View Build</a></p>
-                """
-
-                emailext subject: subject,
-                         body: body,
-                         mimeType: 'text/html',
-                         to: emailRecipients
+                emailext subject: "Jenkins Build Success: ${env.JOB_NAME}",
+                         body: "Build ${env.BUILD_NUMBER} completed successfully.\n\nCheck SonarQube results: http://localhost:9000/dashboard?id=JUnit_Math",
+                         to: 'shaon@opennets.net'
             }
         }
-        
+
         failure {
             script {
-                def emailRecipients = 'shaon@opennets.net' // Update as needed
-                def subject = "FAILURE: Jenkins Build ${env.JOB_NAME} #${env.BUILD_NUMBER}"
-                def body = """
-                    <p>Build Result: <b>FAILURE</b></p>
-                    <p>Job Name: ${env.JOB_NAME}</p>
-                    <p>Build Number: ${env.BUILD_NUMBER}</p>
-                    <p><a href="${env.BUILD_URL}">View Build</a></p>
-                """
-
-                emailext subject: subject,
-                         body: body,
-                         mimeType: 'text/html',
-                         to: emailRecipients
+                emailext subject: "Jenkins Build Failed: ${env.JOB_NAME}",
+                         body: "Build ${env.BUILD_NUMBER} has failed. Check Jenkins logs for details.",
+                         to: 'shaon@opennets.net'
             }
         }
     }
