@@ -4,7 +4,7 @@ pipeline {
         JAVA_HOME = 'C:\\Program Files\\Java\\jdk-17' // Update with your Java path
         PATH = "${JAVA_HOME}\\bin;${env.PATH}"
         SONAR_SCANNER_HOME = "${env.WORKSPACE}\\sonar-scanner" // Adjust based on SonarQube setup
-        SONAR_TOKEN = credentials('sonar-auth-token') // Use Jenkins credentials for authentication
+        SONAR_TOKEN = credentials('Jenkins-Sonar_1') // Use Jenkins credentials for authentication
     }
     stages {
         stage('Checkout Code') {
