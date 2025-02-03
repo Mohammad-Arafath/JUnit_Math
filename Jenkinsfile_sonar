@@ -4,7 +4,6 @@ pipeline {
         JAVA_HOME = 'C:\\Program Files\\Java\\jdk-17' // Update with your Java path
         PATH = "${JAVA_HOME}\\bin;${env.PATH}"
         SONAR_SCANNER_HOME = "${env.WORKSPACE}\\sonar-scanner" // Adjust based on SonarQube setup
-        PATH = "${SONAR_SCANNER_HOME}\\bin;${env.PATH}"
     }
     stages {
         stage('Checkout Code') {
@@ -41,7 +40,7 @@ pipeline {
                 script {
                     bat '''
                     cd JUnit_Java
-                    sonar-scanner -Dsonar.projectKey=JUnit_Math -Dsonar.sources=. -Dsonar.host.url=http://sq:9000 -Dsonar.login=admin -Dsonar.password=admin
+                    ${SONAR_SCANNER_HOME}\\bin\\sonar-scanner -Dsonar.projectKey=JUnit_Math -Dsonar.sources=. -Dsonar.host.url=http://sq:9000 -Dsonar.login=admin -Dsonar.password=admin
                     '''
                 }
             }
