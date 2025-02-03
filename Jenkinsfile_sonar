@@ -1,11 +1,10 @@
 pipeline {
     agent any
+
     environment {
-        JAVA_HOME = 'C:\\Program Files\\Java\\jdk-17' // Update with your Java path
-        PATH = "${JAVA_HOME}\\bin;${env.PATH}"
-        SONAR_SCANNER_HOME = "${env.WORKSPACE}\\sonar-scanner" // Adjust based on SonarQube setup
-        SONAR_TOKEN = credentials('Jenkins-Sonar_1') // Use Jenkins credentials for authentication
+        SONAR_SCANNER_HOME = 'C:\\sonar-scanner'
     }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -15,41 +14,35 @@ pipeline {
 
         stage('Compile') {
             steps {
-                script {
-                    bat '''
+                bat '''
                     cd JUnit_Java
                     if not exist bin mkdir bin
                     javac -cp ".;lib\\junit-jupiter-api-5.11.4.jar;lib\\junit-jupiter-engine-5.11.4.jar;lib\\junit-platform-console-standalone-1.11.4.jar" -d bin JUinit_Test\\MathUtils.java JUinit_Test\\MathUtilsTest.java
-                    '''
-                }
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
-                script {
-                    bat '''
+                bat '''
                     cd JUnit_Java
                     java -jar lib\\junit-platform-console-standalone-1.11.4.jar --class-path bin --scan-class-path --reports-dir bin\\test-logs
-                    '''
-                }
+                '''
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                script {
-                    bat '''
-                    cd JUnit_Java
-                    ${SONAR_SCANNER_HOME}\\bin\\sonar-scanner -Dsonar.projectKey=JUnit_Math -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${squ_b91f02c1d8074acae99107127b5d57567477e0f5}
-                    '''
+                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+                    bat "${SONAR_SCANNER_HOME}\\bin\\sonar-scanner -Dsonar.projectKey=JUnit_Math -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${SONAR_TOKEN}"
                 }
             }
         }
     }
+
     post {
         always {
-            junit '**/JUnit_Java/bin/test-logs/*.xml'
+            junit 'JUnit_Java/bin/test-logs/*.xml'
         }
     }
 }
