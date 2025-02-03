@@ -41,7 +41,7 @@ pipeline {
                 script {
                     bat '''
                     cd JUnit_Java
-                    ${SONAR_SCANNER_HOME}\\bin\\sonar-scanner -Dsonar.projectKey=JUnit_Math -Dsonar.sources=. -Dsonar.host.url=http://sq:9000 -Dsonar.login=${SONAR_TOKEN}
+                    ${SONAR_SCANNER_HOME}\\bin\\sonar-scanner -Dsonar.projectKey=JUnit_Math -Dsonar.sources=. -Dsonar.host.url=http://sq:9000 -Dsonar.login=${squ_b91f02c1d8074acae99107127b5d57567477e0f5}
                     '''
                 }
             }
