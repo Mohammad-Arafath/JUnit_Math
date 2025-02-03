@@ -1,55 +1,73 @@
 pipeline {
     agent any
-
     environment {
-        SONAR_SCANNER_HOME = 'C:\\sonar-scanner'
+        SONAR_TOKEN = credentials('sonar-token-id')  // Ensure this credential is stored in Jenkins
     }
-
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Mohammad-Arafath/JUnit_Math.git'
+                git branch: 'sonar', url: 'https://github.com/Mohammad-Arafath/JUnit_Math.git'
             }
         }
 
         stage('Compile') {
             steps {
-                bat '''
+                script {
+                    bat '''
                     cd JUnit_Java
                     if not exist bin mkdir bin
                     javac -cp ".;lib\\junit-jupiter-api-5.11.4.jar;lib\\junit-jupiter-engine-5.11.4.jar;lib\\junit-platform-console-standalone-1.11.4.jar" -d bin JUinit_Test\\MathUtils.java JUinit_Test\\MathUtilsTest.java
-                '''
+                    '''
+                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat '''
+                script {
+                    bat '''
                     cd JUnit_Java
                     java -jar lib\\junit-platform-console-standalone-1.11.4.jar --class-path bin --scan-class-path --reports-dir bin\\test-logs
-                '''
+                    '''
+                }
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                withCredentials([string(credentialsId: 'Jenkins-Sonar', variable: 'SONAR_TOKEN')]) {
-                    bat """ 
-C:\\sonar-scanner\\bin\\sonar-scanner \
--Dsonar.projectKey=JUnit_Math \
--Dsonar.sources=. \
--Dsonar.java.binaries=C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\JUnit-Git-Sonar\\JUnit_Java\\bin \
--Dsonar.host.url=http://localhost:9000 \
--Dsonar.login=${SONAR_TOKEN}
-"""
+                withCredentials([string(credentialsId: 'sonar-token-id', variable: 'SONAR_TOKEN')]) {
+                    bat '''
+                    C:\\sonar-scanner\\bin\\sonar-scanner -Dsonar.projectKey=JUnit_Math -Dsonar.sources=. -Dsonar.java.binaries=bin -Dsonar.host.url=http://localhost:9000 -Dsonar.login=%SONAR_TOKEN%
+                    '''
                 }
             }
         }
     }
 
     post {
-        always {
-            junit 'JUnit_Java/bin/test-logs/*.xml'
+        success {
+            emailext subject: "Jenkins Build SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                ✅ Build SUCCESS 🎉
+                - Job: ${env.JOB_NAME}
+                - Build Number: ${env.BUILD_NUMBER}
+                - View Build: ${env.BUILD_URL}
+                """,
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                to: 'your-email@example.com'
+        }
+
+        failure {
+            emailext subject: "Jenkins Build FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                ❌ Build FAILED 🚨
+                - Job: ${env.JOB_NAME}
+                - Build Number: ${env.BUILD_NUMBER}
+                - View Build: ${env.BUILD_URL}
+                - Logs: ${env.BUILD_URL}console
+                """,
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                to: 'your-email@example.com'
         }
     }
 }
