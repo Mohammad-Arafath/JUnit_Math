@@ -34,14 +34,14 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'Jenkins-Sonar', variable: 'SONAR_TOKEN')]) {
-                    bat """
-                        C:\\sonar-scanner\\bin\\sonar-scanner ^
-                        -Dsonar.projectKey=JUnit_Math ^
-                        -Dsonar.sources=. ^
-                        -Dsonar.java.binaries=bin ^
-                        -Dsonar.host.url=http://localhost:9000 ^
-                        -Dsonar.login=${SONAR_TOKEN}
-                    """
+                    bat """ 
+C:\\sonar-scanner\\bin\\sonar-scanner \
+-Dsonar.projectKey=JUnit_Math \
+-Dsonar.sources=. \
+-Dsonar.java.binaries=C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\JUnit-Git-Sonar\\JUnit_Java\\bin \
+-Dsonar.host.url=http://localhost:9000 \
+-Dsonar.login=${SONAR_TOKEN}
+"""
                 }
             }
         }
