@@ -1,4 +1,3 @@
-//JUnit+Jenkins+SonarQube+EMail
 pipeline {
     agent any
 
@@ -20,18 +19,18 @@ pipeline {
                     bat '''
                     cd JUnit_Java
                     if not exist bin mkdir bin
-                    javac -cp ".;lib\\junit-jupiter-api-5.11.4.jar;lib\\junit-jupiter-engine-5.11.4.jar;lib\\junit-platform-console-standalone-1.11.4.jar" -d bin JUinit_Test\\MathUtils.java JUinit_Test\\MathUtilsTest.java
+                    javac -cp ".;lib\\junit-jupiter-api-5.11.4.jar;lib\\junit-jupiter-engine-5.11.4.jar;lib\\junit-platform-console-standalone-1.11.4.jar;lib\\jacocoagent.jar" -d bin JUinit_Test\\MathUtils.java JUinit_Test\\MathUtilsTest.java
                     '''
                 }
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Tests with JaCoCo') {
             steps {
                 script {
                     bat '''
                     cd JUnit_Java
-                    java -jar lib\\junit-platform-console-standalone-1.11.4.jar --class-path bin --scan-class-path --reports-dir bin\\test-logs
+                    java -javaagent:lib\\jacocoagent.jar=destfile=bin\\jacoco.exec -jar lib\\junit-platform-console-standalone-1.11.4.jar --class-path bin --scan-class-path --reports-dir bin\\test-logs
                     '''
                 }
             }
@@ -39,7 +38,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withCredentials([string(credentialsId: 'Jenkins-Sonar', variable: 'SONAR_TOKEN')]) {
+                withCredentials([string(credentialsId: 'sonar-token-id', variable: 'SONAR_TOKEN')]) {
                     bat '''
                     cd JUnit_Java
                     C:\\sonar-scanner\\bin\\sonar-scanner ^
@@ -47,6 +46,7 @@ pipeline {
                     -Dsonar.sources=. ^
                     -Dsonar.java.binaries=bin ^
                     -Dsonar.host.url=http://localhost:9000 ^
+                    -Dsonar.coverage.jacoco.xmlReportPaths=bin\\jacoco.exec ^
                     -Dsonar.login=%SONAR_TOKEN%
                     '''
                 }
@@ -57,7 +57,7 @@ pipeline {
     post {
         success {
             script {
-                def emailRecipients = 'shaon@opennets.net' // Update as needed
+                def emailRecipients = 'shaon@opennets.net, your-email@example.com' // Update as needed
                 def subject = "SUCCESS: Jenkins Build ${env.JOB_NAME} #${env.BUILD_NUMBER}"
                 def body = """
                     <p>Build Result: <b>SUCCESS</b></p>
@@ -75,7 +75,7 @@ pipeline {
         
         failure {
             script {
-                def emailRecipients = 'shaon@opennets.net' // Update as needed
+                def emailRecipients = 'shaon@opennets.net, your-email@example.com' // Update as needed
                 def subject = "FAILURE: Jenkins Build ${env.JOB_NAME} #${env.BUILD_NUMBER}"
                 def body = """
                     <p>Build Result: <b>FAILURE</b></p>
