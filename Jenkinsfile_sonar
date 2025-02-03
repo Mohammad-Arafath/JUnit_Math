@@ -57,7 +57,7 @@ pipeline {
     post {
         success {
             script {
-                def emailRecipients = 'shaon@opennets.net, your-email@example.com' // Update as needed
+                def emailRecipients = 'shaon@opennets.net' // Update as needed
                 def subject = "SUCCESS: Jenkins Build ${env.JOB_NAME} #${env.BUILD_NUMBER}"
                 def body = """
                     <p>Build Result: <b>SUCCESS</b></p>
@@ -75,7 +75,7 @@ pipeline {
         
         failure {
             script {
-                def emailRecipients = 'shaon@opennets.net, your-email@example.com' // Update as needed
+                def emailRecipients = 'shaon@opennets.net' // Update as needed
                 def subject = "FAILURE: Jenkins Build ${env.JOB_NAME} #${env.BUILD_NUMBER}"
                 def body = """
                     <p>Build Result: <b>FAILURE</b></p>
