@@ -54,7 +54,7 @@ pipeline {
                 - View Build: ${env.BUILD_URL}
                 """,
                 recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                to: 'your-email@example.com'
+                to: 'shaon@opennets.net'
         }
 
         failure {
@@ -67,7 +67,7 @@ pipeline {
                 - Logs: ${env.BUILD_URL}console
                 """,
                 recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                to: 'your-email@example.com'
+                to: 'shaon@opennets.net'
         }
     }
 }
