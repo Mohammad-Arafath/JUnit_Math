@@ -34,7 +34,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-                    bat "${SONAR_SCANNER_HOME}\\bin\\sonar-scanner -Dsonar.projectKey=JUnit_Math -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${SONAR_TOKEN}"
+                    bat "${SONAR_SCANNER_HOME}\\bin\\sonar-scanner -Dsonar.projectKey=JUnit_Math -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${sq}"
                 }
             }
         }
